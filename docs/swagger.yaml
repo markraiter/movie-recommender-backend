@@ -1,0 +1,163 @@
+basePath: /api
+definitions:
+  models.LoginInput:
+    properties:
+      email:
+        example: admin@example.com
+        type: string
+      password:
+        example: password12345
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.Response:
+    properties:
+      message:
+        example: response message
+        type: string
+    type: object
+  models.User:
+    properties:
+      email:
+        example: admin@example.com
+        type: string
+      first_name:
+        example: Alex
+        type: string
+      id:
+        example: ""
+        type: string
+      last_name:
+        example: Johnson
+        type: string
+      password:
+        example: password12345
+        minLength: 8
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact:
+    email: raitermrk@gmail.com
+    name: Mark Raiter
+  description: Docs for movie-recommender backend API
+  title: MOVIE-RECOMMENDER API
+  version: "1.0"
+paths:
+  /health:
+    get:
+      consumes:
+      - '*/*'
+      description: Ping health of API for Docker.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Show the status of server.
+      tags:
+      - Health
+  /refresh:
+    post:
+      consumes:
+      - application/json
+      description: refresh
+      operationId: refresh
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Refresh
+      tags:
+      - auth
+  /sign-in:
+    post:
+      consumes:
+      - application/json
+      description: login
+      operationId: login
+      parameters:
+      - description: credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: SignIn
+      tags:
+      - auth
+  /sign-up:
+    post:
+      consumes:
+      - application/json
+      description: create account
+      operationId: create-account
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "406":
+          description: Not Acceptable
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: SignUp
+      tags:
+      - auth
+swagger: "2.0"

@@ -1,0 +1,47 @@
+version: "3"
+
+dotenv: ['.env']
+
+tasks:
+  fmt:
+      cmds:
+        - go fmt ./...
+
+  run:
+    env:
+      DB_HOST: localhost
+    cmds:
+      - go run cmd/main.go
+
+  lintcheck:
+    cmds:
+      - golangci-lint run
+
+  test:
+    cmds:
+      - go test ./...
+
+  coverage:
+    cmds:
+      - go test ./... -coverprofile=coverage.out
+      - go tool cover -html=coverage.out -o coverage.html
+      - xdg-open ./coverage.html
+
+  swaginit:
+    cmds:
+      - swag init --outputTypes go,yaml -g cmd/main.go internal/models
+
+  mongo-up:
+    cmds:
+      - docker compose -f mongo.yaml up -d
+
+  mongo-down:
+    cmds:
+      - docker compose -f mongo.yaml down
+
+  build:
+    cmds:
+      - git stash
+      - git pull
+      - docker compose -f production.yml up -d --build
+      - docker compose -f production.yml restart

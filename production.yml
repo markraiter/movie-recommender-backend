@@ -1,0 +1,42 @@
+version: '3.9'
+
+services:
+  mongodb:
+    image: mongo
+    restart: unless-stopped
+    container_name: mongodb-for-movie-recommender
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - 27017:27018
+    networks:
+      - mongodb-net
+
+  movie-recommender:
+    env_file:
+      - .env
+    build: .
+    container_name: movie-recommender
+    depends_on:
+      - mongodb-for-movie-recommender
+    restart: unless-stopped
+    ports:
+      - ${APP_PORT}
+    networks:
+      - mongodb-net
+      - localnet 
+
+volumes:
+  mongo-data:
+
+networks:
+  mongodb-net:
+    driver: bridge
+    name: mongodb-net
+
+  localnet:
+    external: true
+    name: localnet
